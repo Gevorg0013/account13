@@ -2,10 +2,12 @@ package com.useraccount.user.controller;
 
 import com.useraccount.user.domain.AccountRegister;
 import com.useraccount.user.dto.UserRegisterRequest;
+import com.useraccount.user.dto.UserRegisterResponse;
 import com.useraccount.user.services.RegisterAccountService;
+import com.useraccount.user.util.JwtTokenUtil;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -18,25 +20,32 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api")
 public class RegisterController {
 
+    ModelMapper modelMapper = new ModelMapper();
+    
+    
     @Autowired
-    private PasswordEncoder passwordEncoder;
+    private JwtTokenUtil utilClass;
 
     @Autowired
     private RegisterAccountService registerService;
+
     @GetMapping("/greet")
     public String greet() {
         return "Hello, welcome to the Spring Boot example!";
     }
-    
+
     /**
      *
      * @param registerDTO
      * @return
      */
-    @PostMapping("/user/register")
+    @PostMapping("/user/signUp")
     public ResponseEntity insertUser(
             @RequestBody final UserRegisterRequest registerDTO) {
 
+        if(registerService.emailVerification(registerDTO.getEmail())) {
+             return ResponseEntity.badRequest().body("email isn't unique");
+        }
         AccountRegister save = registerService.save(registerDTO);
         if (save != null) {
             return ResponseEntity.ok(save);
@@ -49,10 +58,18 @@ public class RegisterController {
             @RequestParam(name = "email") final String email,
             @RequestParam(name = "password") final String password
     ) {
-        UserRegisterRequest allAccount = registerService.getAllAccount(password, email);
-        if (allAccount != null) {
-            return ResponseEntity.ok(allAccount);
+
+        long expirationMillis = 3600000; // 1 hour
+
+        UserRegisterRequest accountByEmail = registerService.getAllAccount(password, email);
+        String authToken = utilClass.generateToken(accountByEmail.getFirstName());
+
+        UserRegisterResponse result = modelMapper.map(accountByEmail, UserRegisterResponse.class);
+
+        if (result != null) {
+            result.setToken(authToken);
+            return ResponseEntity.ok(result);
         }
-        return ResponseEntity.badRequest().body("failed");
+        return ResponseEntity.badRequest().body("save operation failed");
     }
 }

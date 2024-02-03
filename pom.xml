@@ -26,7 +26,25 @@
     <groupId>org.modelmapper</groupId>
     <artifactId>modelmapper</artifactId>
     <version>0.7.4</version> <!-- Use the latest version available -->
-    <type>jar</type>
+        <type>jar</type>
+</dependency>
+
+<dependency>
+    <groupId>io.jsonwebtoken</groupId>
+    <artifactId>jjwt-api</artifactId>
+    <version>0.11.2</version> <!-- Use the latest version available -->
+</dependency>
+<dependency>
+    <groupId>io.jsonwebtoken</groupId>
+    <artifactId>jjwt-impl</artifactId>
+    <version>0.11.2</version> <!-- Use the latest version available -->
+    <scope>runtime</scope>
+</dependency>
+<dependency>
+    <groupId>io.jsonwebtoken</groupId>
+    <artifactId>jjwt-jackson</artifactId>
+    <version>0.11.2</version> <!-- Use the latest version available -->
+    <scope>runtime</scope>
 </dependency>
 
             <dependency>
@@ -76,6 +94,12 @@
                         <groupId>org.springframework.security</groupId>
                         <artifactId>spring-security-core</artifactId>
                         <version>5.2.2.RELEASE</version>
+                        <type>jar</type>
+                </dependency>
+                <dependency>
+                        <groupId>io.jsonwebtoken</groupId>
+                        <artifactId>jjwt-api</artifactId>
+                        <version>0.11.2</version>
                         <type>jar</type>
                 </dependency>
         </dependencies>

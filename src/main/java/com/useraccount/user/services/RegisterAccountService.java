@@ -4,8 +4,6 @@ package com.useraccount.user.services;
 
 import com.useraccount.user.domain.AccountRegister;
 import com.useraccount.user.dto.UserRegisterRequest;
-import java.util.*; // import the ArrayList class
-
 import com.useraccount.user.repository.RegisterAccountRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,16 +30,20 @@ public class RegisterAccountService {
     public UserRegisterRequest getAllAccount(final String password, final String email) {
 
         UserRegisterRequest result = new UserRegisterRequest();
-        List<AccountRegister> findAllByEmail = repo.findAllByEmail(email);
-        for (AccountRegister user : findAllByEmail) {
-            boolean matches = passwordEncoder.matches(password, user.getPassword());
-            if (matches) {
-                result = modelMapper.map(user, UserRegisterRequest.class);
-                break;
-            }
+        AccountRegister user = repo.findByEmail(email);
+        boolean matches = passwordEncoder.matches(password, user.getPassword());
+        if (matches) {
+            result = modelMapper.map(user, UserRegisterRequest.class);
         }
-        return result;
-//        return new ArrayList<AccountRegister>();
 
+        return result;
+
+    }
+
+    public boolean emailVerification(final String email) {
+        if (email == null || email.isEmpty()) {
+            return false;
+        }
+        return repo.existsByEmail(email);
     }
 }
