@@ -40,7 +40,7 @@ public class RegisterController {
      * @return
      */
     @PostMapping("/user/signUp")
-    public ResponseEntity insertUser(
+    public ResponseEntity signUp(
             @RequestBody final UserRegisterRequest registerDTO) {
 
         if(registerService.emailVerification(registerDTO.getEmail())) {
@@ -59,8 +59,6 @@ public class RegisterController {
             @RequestParam(name = "password") final String password
     ) {
 
-        long expirationMillis = 3600000; // 1 hour
-
         UserRegisterRequest accountByEmail = registerService.getAllAccount(password, email);
         String authToken = utilClass.generateToken(accountByEmail.getFirstName());
 
@@ -71,5 +69,16 @@ public class RegisterController {
             return ResponseEntity.ok(result);
         }
         return ResponseEntity.badRequest().body("save operation failed");
+    }
+    
+    @GetMapping("token/test")
+    public ResponseEntity<String> testToken(@RequestParam String token) {
+        boolean validateToken = utilClass.validateToken(token);
+        if(validateToken == true) {
+            return ResponseEntity.ok().body("token verification passed succsessfully ");
+            
+        } else {
+            return ResponseEntity.badRequest().body("verification failed");
+        }
     }
 }
