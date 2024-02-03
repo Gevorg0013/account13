@@ -1,6 +1,6 @@
-/home/gevorg/Desktop/workspace/user/src/main/java/com/useraccount/user/data/AccountRegister.java
-/home/gevorg/Desktop/workspace/user/src/main/java/com/useraccount/user/dto/UserRegisterDTO.java
-/home/gevorg/Desktop/workspace/user/src/main/java/com/useraccount/user/UserApplication.java
-/home/gevorg/Desktop/workspace/user/src/main/java/com/useraccount/user/controller/RegisterController.java
-/home/gevorg/Desktop/workspace/user/src/main/java/com/useraccount/user/services/RegisterAccountService.java
-/home/gevorg/Desktop/workspace/user/src/main/java/com/useraccount/user/repository/RegisterAccountRepository.java
+/home/user/Աշխատասեղան/account13/src/main/java/com/useraccount/user/controller/RegisterController.java
+/home/user/Աշխատասեղան/account13/src/main/java/com/useraccount/user/dto/UserRegisterDTO.java
+/home/user/Աշխատասեղան/account13/src/main/java/com/useraccount/user/data/AccountRegister.java
+/home/user/Աշխատասեղան/account13/src/main/java/com/useraccount/user/UserApplication.java
+/home/user/Աշխատասեղան/account13/src/main/java/com/useraccount/user/repository/RegisterAccountRepository.java
+/home/user/Աշխատասեղան/account13/src/main/java/com/useraccount/user/services/RegisterAccountService.java
