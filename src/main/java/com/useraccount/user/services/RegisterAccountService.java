@@ -4,7 +4,11 @@ package com.useraccount.user.services;
 
 import com.useraccount.user.domain.AccountRegister;
 import com.useraccount.user.dto.UserRegisterRequest;
+import com.useraccount.user.dto.UserRegisterResponse;
 import com.useraccount.user.repository.RegisterAccountRepository;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -45,5 +49,38 @@ public class RegisterAccountService {
             return false;
         }
         return repo.existsByEmail(email);
+    }
+
+    public List<UserRegisterResponse> getAllUsers() {
+        List<AccountRegister> findAll = repo.findAll();
+        List<UserRegisterResponse> response = new ArrayList<>();
+        if (findAll != null) {
+            for (AccountRegister user : findAll) {
+                UserRegisterResponse map = modelMapper.map(user, UserRegisterResponse.class);
+                response.add(map);
+            }
+            return response;
+        }
+        return response;
+    }
+
+   public boolean deleteById(final Long userId) {
+        // Delete the entity by its ID and return whether the deletion was successful
+        try {
+            repo.deleteById(userId);
+            return true; // Deletion successful
+        } catch (Exception e) {
+            return false; // Deletion failed
+        }
+    }
+
+    public Optional<UserRegisterResponse> getUserById(final Long userId) {
+        Optional<AccountRegister> findById = repo.findById(userId);
+        if (findById == null || findById.isEmpty()) {
+            return null;
+        }
+        UserRegisterResponse map = modelMapper.map(findById.get(), UserRegisterResponse.class);
+        return Optional.of(map);
+
     }
 }

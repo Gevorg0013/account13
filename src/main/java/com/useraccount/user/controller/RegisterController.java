@@ -5,9 +5,16 @@ import com.useraccount.user.dto.UserRegisterRequest;
 import com.useraccount.user.dto.UserRegisterResponse;
 import com.useraccount.user.services.RegisterAccountService;
 import com.useraccount.user.util.JwtTokenUtil;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.support.Repositories;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -70,15 +77,51 @@ public class RegisterController {
         }
         return ResponseEntity.badRequest().body("save operation failed");
     }
-    
-    @GetMapping("token/test")
-    public ResponseEntity<String> testToken(@RequestParam String token) {
+
+    @GetMapping("/user/list")
+    public ResponseEntity getuserList(@RequestParam final String token) {
         boolean validateToken = utilClass.validateToken(token);
-        if(validateToken == true) {
-            return ResponseEntity.ok().body("token verification passed succsessfully ");
-            
-        } else {
-            return ResponseEntity.badRequest().body("verification failed");
+        if (!validateToken) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("token is invalid!");
         }
+        List<UserRegisterResponse> allUsers = registerService.getAllUsers();
+        return ResponseEntity.ok(allUsers);
     }
+
+    @GetMapping("/user/by/id")
+    public ResponseEntity getUserByid(
+            @RequestParam(name = "token") final String token,
+            @RequestParam(name = "userid") final Long userId
+    ) {
+        boolean validateToken = utilClass.validateToken(token);
+        if (!validateToken) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("token is invalid!");
+        }
+        Optional<UserRegisterResponse> userById = registerService.getUserById(userId);
+        if(userById.isPresent()) {
+            return ResponseEntity.ok(userById.get());
+        } 
+        return ResponseEntity.badRequest().body("can't find user via this id!");
+
+    }
+
+    @DeleteMapping("remove/user/by/id")
+    public ResponseEntity deleteUserById(
+            @RequestParam(name = "userId") final Long userid,
+            @RequestParam(name = "token") String token
+    ) {
+        boolean validateToken = utilClass.validateToken(token);
+        if (!validateToken) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("token is invalid!");
+        } else {
+            boolean deleteById = registerService.deleteById(userid);
+            if (deleteById) {
+                return ResponseEntity.ok("deletion passed successfully");
+            } else {
+                return ResponseEntity.ok("deletion failed");
+            }
+        }
+    } 
+    
+    
 }
