@@ -1,6 +1,9 @@
+com/useraccount/user/dto/UserRegisterResponse.class
 com/useraccount/user/repository/RegisterAccountRepository.class
+com/useraccount/user/util/JwtTokenUtil.class
 com/useraccount/user/controller/RegisterController.class
 com/useraccount/user/UserApplication.class
-com/useraccount/user/dto/UserRegisterDTO.class
-com/useraccount/user/data/AccountRegister.class
+com/useraccount/user/dto/UserRegisterRequest.class
 com/useraccount/user/services/RegisterAccountService.class
+com/useraccount/user/services/SecurityConfig.class
+com/useraccount/user/domain/AccountRegister.class

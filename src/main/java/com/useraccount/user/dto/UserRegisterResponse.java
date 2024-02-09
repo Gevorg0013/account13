@@ -15,8 +15,8 @@ import lombok.Data;
  */
 @Data
 public class UserRegisterResponse {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+ 
+    private Long id;
     private String firstName;
     private String lastName;
     private String email;
