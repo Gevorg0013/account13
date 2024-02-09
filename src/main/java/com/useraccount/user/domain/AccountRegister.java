@@ -27,6 +27,7 @@ public class AccountRegister {
 
     private String password;
     private String email;
+    private Boolean isVerified;
 
     // Getters and setters
 }

@@ -4,10 +4,14 @@ import com.useraccount.user.domain.AccountRegister;
 import com.useraccount.user.dto.UserRegisterRequest;
 import com.useraccount.user.dto.UserRegisterResponse;
 import com.useraccount.user.services.RegisterAccountService;
+import com.useraccount.user.util.EmailSenderService;
 import com.useraccount.user.util.JwtTokenUtil;
+import jakarta.mail.MessagingException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.support.Repositories;
@@ -35,9 +39,19 @@ public class RegisterController {
 
     @Autowired
     private RegisterAccountService registerService;
+    
+    @Autowired
+    private EmailSenderService emailService;
 
     @GetMapping("/greet")
-    public String greet() {
+    public String greet(@RequestParam final String email) {
+        try {
+            emailService.triggerMail(email);
+            
+        } catch (MessagingException ex) {
+            Logger.getLogger(RegisterController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
         return "Hello, welcome to the Spring Boot example!";
     }
 
