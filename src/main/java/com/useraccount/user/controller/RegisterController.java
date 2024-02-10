@@ -8,17 +8,13 @@ import com.useraccount.user.services.RegisterAccountService;
 import com.useraccount.user.util.EmailSenderService;
 import com.useraccount.user.util.JwtTokenUtil;
 import jakarta.mail.MessagingException;
-import jakarta.transaction.Status;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.repository.support.Repositories;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -47,28 +43,16 @@ public class RegisterController {
     @Autowired
     private EmailSenderService emailService;
 
-    @GetMapping("/greet")
-    public String greet(@RequestParam final String email) {
-        try {
-            emailService.triggerMail(email);
-            
-        } catch (MessagingException ex) {
-            Logger.getLogger(RegisterController.class.getName()).log(Level.SEVERE, null, ex);
-        }
-
-        return "Hello, welcome to the Spring Boot example!";
-    }
-
     @GetMapping("/verify")
-    public ResponseEntity verify(@RequestParam final String email
+    public ResponseEntity verify(@RequestParam final String hashedCode
     ) {
 
-        AccountRegister userByEmail = registerService.getUserByEmail(email);
+        AccountRegister userByEmail = registerService.getUserByhashedEmailCode(hashedCode);
         if (userByEmail == null) {
             return ResponseEntity.badRequest().body("can't find email");
         }
         userByEmail.setVerified(true);
-//        UserRegisterRequest map = modelMapper.map(userByEmail, UserRegisterRequest.class);
+        userByEmail.setHashedVerificationCode(null);
         repo.save(userByEmail);
         return ResponseEntity.ok(true);
     }
@@ -86,18 +70,20 @@ public class RegisterController {
             return ResponseEntity.badRequest().body("email isn't unique");
         }
 
+        AccountRegister save = registerService.save(registerDTO);
+
+        if (save == null) {
+            return ResponseEntity.badRequest().body("failed");
+
+        }
         try {
-            emailService.triggerMail(registerDTO.getEmail());
+            emailService.triggerMail(save.getEmail(), save.getHashedVerificationCode());
 
         } catch (MessagingException ex) {
             Logger.getLogger(RegisterController.class.getName()).log(Level.SEVERE, null, ex);
         }
+        return ResponseEntity.ok(save);
 
-        AccountRegister save = registerService.save(registerDTO);
-        if (save != null) {
-            return ResponseEntity.ok(save);
-        }
-        return ResponseEntity.badRequest().body("failed");
     }
 
     @GetMapping("user/sign")
@@ -124,8 +110,13 @@ public class RegisterController {
         if (!validateToken) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("token is invalid!");
         }
-        List<UserRegisterResponse> allUsers = registerService.getAllUsers();
-        return ResponseEntity.ok(allUsers);
+
+        Optional<List<UserRegisterResponse>> allUser = registerService.getAllUser();
+        if (allUser.isEmpty()) {
+            return ResponseEntity.badRequest().body("registerUserLlist is empty!");
+        }
+
+        return ResponseEntity.ok(allUser.get());
     }
 
     @GetMapping("/user/by/id")
@@ -138,9 +129,9 @@ public class RegisterController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("token is invalid!");
         }
         Optional<UserRegisterResponse> userById = registerService.getUserById(userId);
-        if(userById.isPresent()) {
+        if (userById.isPresent()) {
             return ResponseEntity.ok(userById.get());
-        } 
+        }
         return ResponseEntity.badRequest().body("can't find user via this id!");
 
     }
@@ -153,15 +144,14 @@ public class RegisterController {
         boolean validateToken = utilClass.validateToken(token);
         if (!validateToken) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("token is invalid!");
-        } else {
-            boolean deleteById = registerService.deleteById(userid);
-            if (deleteById) {
-                return ResponseEntity.ok("deletion passed successfully");
-            } else {
-                return ResponseEntity.ok("deletion failed");
-            }
         }
-    } 
-    
-    
+        boolean deleteById = registerService.deleteById(userid);
+        if (deleteById) {
+            return ResponseEntity.ok("deletion passed successfully");
+        } else {
+            return ResponseEntity.badRequest().body("deletion failed!");
+        }
+
+    }
+
 }

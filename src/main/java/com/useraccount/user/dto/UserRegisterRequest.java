@@ -22,6 +22,7 @@ public class UserRegisterRequest {
     private String lastName;
     private String password;
     private String email;
+    private String phoneNumber;
     private boolean isVerified; 
 
     // Getters and setters

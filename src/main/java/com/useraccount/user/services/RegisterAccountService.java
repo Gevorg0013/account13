@@ -6,6 +6,7 @@ import com.useraccount.user.domain.AccountRegister;
 import com.useraccount.user.dto.UserRegisterRequest;
 import com.useraccount.user.dto.UserRegisterResponse;
 import com.useraccount.user.repository.RegisterAccountRepository;
+import com.useraccount.user.util.EmailSenderService;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -23,11 +24,15 @@ public class RegisterAccountService {
     private PasswordEncoder passwordEncoder;
     @Autowired
     private RegisterAccountRepository repo;
+    @Autowired
+    EmailSenderService emaolService;
 
     public AccountRegister save(UserRegisterRequest registerDTO) {
 
         AccountRegister map = modelMapper.map(registerDTO, AccountRegister.class);
         map.setPassword(passwordEncoder.encode(registerDTO.getPassword()));
+        Optional<String> hashedCode = emaolService.hashedCode(registerDTO.getEmail());
+        map.setHashedVerificationCode(hashedCode.get());
         return repo.save(map);
     }
 
@@ -63,20 +68,6 @@ public class RegisterAccountService {
         return !existsByEmail;
     }
     
-
-    public List<UserRegisterResponse> getAllUsers() {
-        List<AccountRegister> findAll = repo.findAll();
-        List<UserRegisterResponse> response = new ArrayList<>();
-        if (findAll != null) {
-            for (AccountRegister user : findAll) {
-                UserRegisterResponse map = modelMapper.map(user, UserRegisterResponse.class);
-                response.add(map);
-            }
-            return response;
-        }
-        return response;
-    }
-
    public boolean deleteById(final Long userId) {
         // Delete the entity by its ID and return whether the deletion was successful
         try {
@@ -85,6 +76,15 @@ public class RegisterAccountService {
         } catch (Exception e) {
             return false; // Deletion failed
         }
+    }
+
+    public Optional<List<UserRegisterResponse>> getAllUser() {
+        List<AccountRegister> findAll = repo.findAll();
+        if (findAll == null || findAll.isEmpty()) {
+            return Optional.empty();
+        }
+        List<UserRegisterResponse> userList = modelMapper.map(findAll, ArrayList.class);
+        return Optional.of(userList);
     }
 
     public Optional<UserRegisterResponse> getUserById(final Long userId) {
@@ -97,11 +97,12 @@ public class RegisterAccountService {
 
     }
     
-    public AccountRegister getUserByEmail(final String email) {
-        AccountRegister findByEmail = repo.findByEmail(email);
-        if(findByEmail != null) {
-            return findByEmail;
+    public AccountRegister getUserByhashedEmailCode(final String hashedCode) {
+        AccountRegister user = repo.findByHashedVerificationCode(hashedCode);
+        if(user != null) {
+            return user;
         }
         return null;
     }
+    
 }
