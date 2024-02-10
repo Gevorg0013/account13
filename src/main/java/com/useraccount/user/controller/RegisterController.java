@@ -7,6 +7,7 @@ import com.useraccount.user.services.RegisterAccountService;
 import com.useraccount.user.util.EmailSenderService;
 import com.useraccount.user.util.JwtTokenUtil;
 import jakarta.mail.MessagingException;
+import jakarta.transaction.Status;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -33,7 +34,6 @@ public class RegisterController {
 
     ModelMapper modelMapper = new ModelMapper();
     
-    
     @Autowired
     private JwtTokenUtil utilClass;
 
@@ -51,8 +51,20 @@ public class RegisterController {
         } catch (MessagingException ex) {
             Logger.getLogger(RegisterController.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
+
         return "Hello, welcome to the Spring Boot example!";
+    }
+
+    @GetMapping("/verify")
+    public ResponseEntity verify(@RequestParam final String email
+    ) {
+        
+        AccountRegister userByEmail = registerService.getUserByEmail(email);
+        if(userByEmail == null) {
+            return ResponseEntity.badRequest().body("can't find email");
+        }
+        userByEmail.setVerified(true);
+       return ResponseEntity.ok(true);
     }
 
     /**
@@ -64,9 +76,17 @@ public class RegisterController {
     public ResponseEntity signUp(
             @RequestBody final UserRegisterRequest registerDTO) {
 
-        if(registerService.emailVerification(registerDTO.getEmail())) {
-             return ResponseEntity.badRequest().body("email isn't unique");
+        if (!registerService.isEmailUnique(registerDTO.getEmail())) {
+            return ResponseEntity.badRequest().body("email isn't unique");
         }
+
+        try {
+            emailService.triggerMail(registerDTO.getEmail());
+
+        } catch (MessagingException ex) {
+            Logger.getLogger(RegisterController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
         AccountRegister save = registerService.save(registerDTO);
         if (save != null) {
             return ResponseEntity.ok(save);

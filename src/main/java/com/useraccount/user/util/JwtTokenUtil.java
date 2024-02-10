@@ -44,16 +44,15 @@ public class JwtTokenUtil {
             return false;
         }
     }
-
-    public String getUsernameFromToken(String token) {
-        try {
-            Claims claims = Jwts.parserBuilder().setSigningKey(SECRET_KEY).build().parseClaimsJws(token).getBody();
-            return claims.getSubject();
-        } catch (Exception e) {
-            // Handle any exceptions that might occur during token parsing
-            return null;
-        }
-    }
+    
+    public Long getUserId(String token) {
+    Claims claims = Jwts.parserBuilder()
+                        .setSigningKey(SECRET_KEY)
+                        .build()
+                        .parseClaimsJws(token)
+                        .getBody();
+    return Long.parseLong(claims.getSubject());
+}
 
     // Other methods...
 }

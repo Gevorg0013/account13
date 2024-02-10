@@ -43,13 +43,26 @@ public class RegisterAccountService {
         return result;
 
     }
+    
+    public boolean isEmailUnique(final String email) {
+         if (email == null || email.isEmpty()) {
+            return false;
+        }
+         boolean existsByEmail = repo.existsByEmail(email);
+         if(existsByEmail == true) {
+             return false;
+         }
+         return true;
+    }
 
     public boolean emailVerification(final String email) {
         if (email == null || email.isEmpty()) {
             return false;
         }
-        return repo.existsByEmail(email);
+        boolean existsByEmail = repo.existsByEmail(email);
+        return !existsByEmail;
     }
+    
 
     public List<UserRegisterResponse> getAllUsers() {
         List<AccountRegister> findAll = repo.findAll();
@@ -82,5 +95,13 @@ public class RegisterAccountService {
         UserRegisterResponse map = modelMapper.map(findById.get(), UserRegisterResponse.class);
         return Optional.of(map);
 
+    }
+    
+    public AccountRegister getUserByEmail(final String email) {
+        AccountRegister findByEmail = repo.findByEmail(email);
+        if(findByEmail != null) {
+            return findByEmail;
+        }
+        return null;
     }
 }

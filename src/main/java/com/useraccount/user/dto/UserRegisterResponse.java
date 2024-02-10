@@ -21,6 +21,7 @@ public class UserRegisterResponse {
     private String lastName;
     private String email;
     private String token;
+    private boolean isVerified;
 
     // Getters and setters
 }
