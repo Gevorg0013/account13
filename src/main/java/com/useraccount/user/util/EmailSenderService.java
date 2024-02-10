@@ -20,8 +20,8 @@ public class EmailSenderService {
     public void sendCode(String toEmail) throws MessagingException {
 
         String verificationLink = "http://localhost:8080/api/verify?email=" + toEmail;
-        String body = "<p>Hello,</p><p>Please click the following link to access the API:</p>"
-                + "<p><a href=\"" + verificationLink + "\">" + verificationLink + "</a></p>";
+        String body = "Please click the following link to access the API:"
+                + verificationLink;
 
         String subject = "Verification Code";
 

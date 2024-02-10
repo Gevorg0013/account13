@@ -3,6 +3,7 @@ package com.useraccount.user.controller;
 import com.useraccount.user.domain.AccountRegister;
 import com.useraccount.user.dto.UserRegisterRequest;
 import com.useraccount.user.dto.UserRegisterResponse;
+import com.useraccount.user.repository.RegisterAccountRepository;
 import com.useraccount.user.services.RegisterAccountService;
 import com.useraccount.user.util.EmailSenderService;
 import com.useraccount.user.util.JwtTokenUtil;
@@ -33,13 +34,16 @@ import org.springframework.web.bind.annotation.RestController;
 public class RegisterController {
 
     ModelMapper modelMapper = new ModelMapper();
-    
+
     @Autowired
     private JwtTokenUtil utilClass;
 
     @Autowired
+    private RegisterAccountRepository repo;
+
+    @Autowired
     private RegisterAccountService registerService;
-    
+
     @Autowired
     private EmailSenderService emailService;
 
@@ -58,13 +62,15 @@ public class RegisterController {
     @GetMapping("/verify")
     public ResponseEntity verify(@RequestParam final String email
     ) {
-        
+
         AccountRegister userByEmail = registerService.getUserByEmail(email);
-        if(userByEmail == null) {
+        if (userByEmail == null) {
             return ResponseEntity.badRequest().body("can't find email");
         }
         userByEmail.setVerified(true);
-       return ResponseEntity.ok(true);
+//        UserRegisterRequest map = modelMapper.map(userByEmail, UserRegisterRequest.class);
+        repo.save(userByEmail);
+        return ResponseEntity.ok(true);
     }
 
     /**
