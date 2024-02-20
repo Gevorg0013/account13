@@ -13,5 +13,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface RegisterAccountRepository extends JpaRepository<AccountRegister, Long> {
     AccountRegister findByEmail(final String email);
+    AccountRegister findByHashedVerificationCode(final String verificationCode);
     boolean existsByEmail(final String email);
 }
