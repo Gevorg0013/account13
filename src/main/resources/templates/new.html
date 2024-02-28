@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Coming Soon</title>
+    <style>
+        /* CSS styles */
+        body, html {
+            height: 100%;
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+        
+        .bgimg {
+            /* Background image styles */
+            background-image: url('your-background-image.jpg');
+            height: 100%;
+            background-position: center;
+            background-size: cover;
+            position: relative;
+            color: white;
+            font-size: 28px;
+        }
+        
+        .topleft {
+            /* Styles for top-left corner */
+            position: absolute;
+            top: 0;
+            left: 16px;
+        }
+        
+        .middle {
+            /* Styles for middle section */
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+        }
+        
+        .bottomleft {
+            /* Styles for bottom-left corner */
+            position: absolute;
+            bottom: 0;
+            left: 16px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="bgimg">
+  <div class="topleft">
+
+    <p>Logo</p>
+  </div>
+  <div class="middle">
+    <h1>COMING SOON</h1>
+    <hr>
+    <p>35 days</p>
+  </div>
+  <div class="bottomleft">
+    <p>Some text</p>
+  </div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8">
+        <title>New Page</title>
+    </head>
+    <body>
+
+        <div th:if="${user}">
+            <h1>Welcome, <span th:text="${user.firstName}"></span>!</h1>
+            <p>Your lastName is <span th:text="${user.lastName}"></span></p>
+
+            <p>Your ID: <span th:text="${user.id}"></span></p>
+            <p>Your Email: <span th:text="${user.email}"></span></p>
+
+            <!-- Add more user details here -->
+        </div>
+
+        <div th:unless="${user}">
+            <p>No user found</p>
+        </div>
+
+        <!-- Other HTML content goes here -->
+
+    </body>
+</html>

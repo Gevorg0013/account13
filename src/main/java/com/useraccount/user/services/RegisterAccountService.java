@@ -36,13 +36,13 @@ public class RegisterAccountService {
         return repo.save(map);
     }
 
-    public UserRegisterRequest getAllAccount(final String password, final String email) {
+    public UserRegisterResponse getAllAccount(final String password, final String email) {
 
-        UserRegisterRequest result = new UserRegisterRequest();
+        UserRegisterResponse result = new UserRegisterResponse();
         AccountRegister user = repo.findByEmail(email);
         boolean matches = passwordEncoder.matches(password, user.getPassword());
         if (matches) {
-            result = modelMapper.map(user, UserRegisterRequest.class);
+            result = modelMapper.map(user, UserRegisterResponse.class);
         }
 
         return result;

@@ -92,7 +92,7 @@ public class RegisterController {
             @RequestParam(name = "password") final String password
     ) {
 
-        UserRegisterRequest accountByEmail = registerService.getAllAccount(password, email);
+        UserRegisterResponse accountByEmail = registerService.getAllAccount(password, email);
         String authToken = utilClass.generateToken(accountByEmail.getFirstName());
 
         UserRegisterResponse result = modelMapper.map(accountByEmail, UserRegisterResponse.class);
